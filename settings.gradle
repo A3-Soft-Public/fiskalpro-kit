@@ -1,0 +1,26 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+
+        maven {
+            url = uri("https://maven.pkg.github.com/A3-Soft-Public/fiskalpro-kit")
+
+            credentials {
+                username = ""
+                password = "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"
+            }
+        }
+    }
+}
+
+rootProject.name = "Kit Public Demo App"
+include ':app'
