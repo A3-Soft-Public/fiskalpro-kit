@@ -4,6 +4,67 @@ This repository contains artefacts and example usages of the FiskalPRO Kit publi
 
 ## Implementation
 
+### Repository
+
+Add FiskalPRO Kit public repository to the settings.gradle dependencyResolutionManagement:
+
+```
+dependencyResolutionManagement {
+    …
+    repositories {
+        google()
+        mavenCentral()
+
+        maven {
+            url = uri("https://maven.pkg.github.com/A3-Soft-Public/fiskalpro-kit")
+
+            credentials {
+                username = ""
+                password = "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"
+            }
+        }
+    }
+}
+```
+
+### Dependency
+
+Add the required dependency to the target build.gradle module. For example Native-protocol client:
+
+```
+android {
+    …
+}
+
+dependencies {
+    …
+
+    implementation "sk.a3soft.kit.provider.native-protocol:client:2.1.10"
+}
+```
+
+### JavaVersion
+
+The minimal required Java version is currently JavaVersion.VERSION_11.
+
+```
+android {
+    …
+
+    compileOptions {
+        …
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+```
+
+
 ### Enable desugaring (for min API 25 and lower only!)
 
 * https://developer.android.com/studio/write/java8-support#library-desugaring
@@ -22,3 +83,112 @@ dependencies {
 }
 ```
 
+## Usage
+
+### Native-protocol client - Scan 
+
+Native-protocol client library currently supports single and continuous scan mode. Examples:
+
+###### Barcode one-time scan
+
+```kotlin
+@HiltViewModel
+class ExampleViewModel @Inject constructor(
+    private val nativeProtocolClient: NativeProtocolClient,
+) : ViewModel() {
+
+    fun onTcpIpFtScanClick() {
+        nativeProtocolClient
+            .sendFtScanCommand()
+            .onEach {
+                when (it) {
+                    Resource.Loading -> TODO()
+                    is Resource.Failure -> TODO()
+                    is Resource.Success -> {
+                        val ftScanRead: NativeProtocolResponse.FtScanRead = it.data
+                        when (ftScanRead.status) {
+                            NativeProtocolResponse.FtScanRead.Status.UNKNOWN -> TODO()
+                            NativeProtocolResponse.FtScanRead.Status.UNSUPPORTED_MODE -> TODO()
+                            NativeProtocolResponse.FtScanRead.Status.UNSUPPORTED_CAMERA -> TODO()
+                            NativeProtocolResponse.FtScanRead.Status.SCAN_ERROR -> TODO()
+                            NativeProtocolResponse.FtScanRead.Status.TIMEOUT -> TODO()
+                            NativeProtocolResponse.FtScanRead.Status.ENDED_BY_USER -> TODO()
+                            NativeProtocolResponse.FtScanRead.Status.SCANNED -> {
+                                val scanResult: String = ftScanRead.scanResult
+                                TODO()
+                            }
+                        }
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+}
+```
+
+###### Continuous scan
+
+```kotlin
+@HiltViewModel
+class ExampleViewModel @Inject constructor(
+    private val nativeProtocolClient: NativeProtocolClient,
+) : ViewModel() {
+
+    fun onTcpIpFtScanContinuousClick() {
+        nativeProtocolClient
+            .sendFtScanContinuousCommands()
+            .onEach {
+                when (it) {
+                    Resource.Loading -> TODO()
+                    is Resource.Failure -> TODO()
+                    is Resource.Success -> {
+                        val ftScanResult: NativeProtocolResponse.FtScanResult = it.data
+                        when (ftScanResult.status) {
+                            NativeProtocolResponse.FtScanResult.Status.UNKNOWN -> TODO()
+                            NativeProtocolResponse.FtScanResult.Status.UNSUPPORTED_CAMERA -> TODO()
+                            NativeProtocolResponse.FtScanResult.Status.SCAN_ERROR -> TODO()
+                            NativeProtocolResponse.FtScanResult.Status.TIMEOUT -> TODO()
+                            NativeProtocolResponse.FtScanResult.Status.ENDED_BY_USER -> TODO()
+                            NativeProtocolResponse.FtScanResult.Status.SCANNER_NOT_OPENED -> TODO()
+                            NativeProtocolResponse.FtScanResult.Status.NEW_DATA_NOT_AVAILABLE -> TODO()
+                            NativeProtocolResponse.FtScanResult.Status.SCANNED -> {
+                                val scanResult: String = ftScanResult.scanResult
+                                TODO()
+                            }
+                        }
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+}
+```
+
+Note: FiskalPRO Manager 2.3.6 or newer is required to be installed on the target device.
+
+### Native-protocol client - FrInfo
+
+```kotlin
+@HiltViewModel
+class ExampleViewModel @Inject constructor(
+    private val nativeProtocolClient: NativeProtocolClient,
+) : ViewModel() {
+
+    fun onTcpIpFrInfoClick() {
+        nativeProtocolClient
+            .sendFrInfoCommand()
+            .onEach {
+                when (it) {
+                    Resource.Loading -> TODO()
+                    is Resource.Failure -> TODO()
+                    is Resource.Success -> {
+                        val frInfo: NativeProtocolResponse.FrInfo = it.data
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+}
+```
+
+For a detailed usage example, feel free to clone this repository Demo App.
