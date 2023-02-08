@@ -6,7 +6,7 @@ This repository contains artefacts and example usages of the FiskalPRO Kit publi
 
 ### Repository
 
-Add FiskalPRO Kit public repository to the settings.gradle dependencyResolutionManagement:
+Get the access token from the A3Soft company and add the FiskalPRO Kit public repository configuration to the settings.gradle dependencyResolutionManagement:
 
 ```
 dependencyResolutionManagement {
@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 
             credentials {
                 username = ""
-                password = "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"
+                password = "enter_your_access_token_here"
             }
         }
     }
@@ -164,7 +164,7 @@ class ExampleViewModel @Inject constructor(
 }
 ```
 
-Note: FiskalPRO Manager 2.3.6 or newer is required to be installed on the target device.
+Note: FiskalPRO Manager 2.3.7 or newer is required to be installed on the target device.
 
 ### Native-protocol client - FrInfo
 
