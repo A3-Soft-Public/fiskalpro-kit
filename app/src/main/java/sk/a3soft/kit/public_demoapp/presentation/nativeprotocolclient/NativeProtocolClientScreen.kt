@@ -2,6 +2,10 @@
 
 package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,9 +37,15 @@ fun NativeProtocolClientScreen(
     onTcpIpSimpleDocumentClick: () -> Unit,
     onTcpIpFtScanClick: () -> Unit,
     onTcpIpFtScanContinuousClick: () -> Unit,
+    onTcpIpFtPrintLocalImageClick: (selectedUri: Uri) -> Unit,
     onCloseInfoDialog: () -> Unit,
     focusManager: FocusManager = LocalFocusManager.current,
 ) {
+
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) { uri ->
+        uri?.let { onTcpIpFtPrintLocalImageClick(it) }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -85,6 +95,12 @@ fun NativeProtocolClientScreen(
             Title(text = "FtScanContinuous")
             Button(
                 onClick = onTcpIpFtScanContinuousClick
+            ) {
+                Text("Send")
+            }
+            Title(text = "FtPrintLocalImage")
+            Button(
+                onClick = { launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
             ) {
                 Text("Send")
             }

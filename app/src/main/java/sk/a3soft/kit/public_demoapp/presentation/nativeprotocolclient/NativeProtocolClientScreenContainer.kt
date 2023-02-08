@@ -18,6 +18,7 @@ fun NativeProtocolClientScreenContainer(
         onTcpIpSimpleDocumentClick = viewModel::onTcpIpSimpleDocumentClick,
         onTcpIpFtScanClick = viewModel::onTcpIpFtScanClick,
         onTcpIpFtScanContinuousClick = viewModel::onTcpIpFtScanContinuousClick,
+        onTcpIpFtPrintLocalImageClick = viewModel::onTcpIpFtPrintLocalImageClick,
         onCloseInfoDialog = viewModel::onCloseInfoDialog,
     )
 }

@@ -164,7 +164,7 @@ class ExampleViewModel @Inject constructor(
 }
 ```
 
-Note: FiskalPRO Manager 2.3.7 or newer is required to be installed on the target device.
+Note: FiskalPRO Manager 2.3.7 or newer is required to be installed on the target device (and eKasa 1.2.91 or newer if SK fiscal is required) .
 
 ### Native-protocol client - FrInfo
 
@@ -184,6 +184,29 @@ class ExampleViewModel @Inject constructor(
                     is Resource.Success -> {
                         val frInfo: NativeProtocolResponse.FrInfo = it.data
                     }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+}
+```
+
+### Native-protocol client - FtPrintLocalImage
+
+```kotlin
+@HiltViewModel
+class ExampleViewModel @Inject constructor(
+    private val nativeProtocolClient: NativeProtocolClient,
+) : ViewModel() {
+
+    fun onTcpIpFtPrintLocalImageClick() {
+        nativeProtocolClient
+            .sendFtPrintLocalImage("/public/raw/path/to/the/target/image.extension")
+            .onEach {
+                when (it) {
+                    Resource.Loading -> TODO()
+                    is Resource.Failure -> TODO()
+                    is Resource.Success -> TODO()
                 }
             }
             .launchIn(viewModelScope)

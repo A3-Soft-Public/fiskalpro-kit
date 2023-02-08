@@ -1,5 +1,6 @@
 package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -119,6 +120,20 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
                 it.toRequestState()
             }
             .launchIn(viewModelScope)
+    }
+
+    fun onTcpIpFtPrintLocalImageClick(selectedUri: Uri) {
+        selectedUri
+            .lastPathSegment
+            ?.replace("raw:", "")
+            ?.let { rawPath ->
+                nativeProtocolClient
+                    .sendFtPrintLocalImage(rawPath)
+                    .onEach {
+                        it.toRequestState()
+                    }
+                    .launchIn(viewModelScope)
+            }
     }
 
     private inline fun <reified T : NativeProtocolResponse> Resource<T, FailureType.NativeProtocol>.toRequestState() {
