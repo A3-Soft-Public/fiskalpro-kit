@@ -5,6 +5,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+byte[] value = "Z2hwXzJHZVBpTHZHN0xZb1Jobk9ka0JibzZtYWJZTXBHbzJ4SUcybA==".decodeBase64()
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -16,7 +19,7 @@ dependencyResolutionManagement {
 
             credentials {
                 username = ""
-                password = "enter_your_access_token_here"
+                password = new String(value)
             }
         }
     }

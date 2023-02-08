@@ -57,10 +57,10 @@ android {
 dependencies {
 
     // FiskalPRO
-    implementation "sk.a3soft.kit.provider.native-protocol:client:2.1.10"
+    implementation "sk.a3soft.kit.provider.native-protocol:client:2.2.0"
 
     // Desugar
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.0"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.2"
 
     // Hilt
     implementation "com.google.dagger:hilt-android:2.44"
