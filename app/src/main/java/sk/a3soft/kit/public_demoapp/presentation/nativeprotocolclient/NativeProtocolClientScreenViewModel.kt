@@ -123,12 +123,17 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
     }
 
     fun onTcpIpFtPrintLocalImageClick(selectedUri: Uri) {
-        selectedUri
-            .lastPathSegment
-            ?.replace("raw:", "")
-            ?.let { rawPath ->
+        val lastPathSegment = selectedUri.lastPathSegment
+        if (lastPathSegment == null || !lastPathSegment.contains("raw:")) {
+            requestState.value = NativeProtocolClientRequestState.Finished("Please select image with raw file path.")
+            return
+        }
+
+        lastPathSegment
+            .replace("raw:", "")
+            .run {
                 nativeProtocolClient
-                    .sendFtPrintLocalImage(rawPath)
+                    .sendFtPrintLocalImage(this)
                     .onEach {
                         it.toRequestState()
                     }
