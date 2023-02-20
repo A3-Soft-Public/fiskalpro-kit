@@ -24,6 +24,7 @@ import androidx.navigation.compose.navigation
 import sk.a3soft.kit.public_demoapp.R
 import sk.a3soft.kit.public_demoapp.presentation.components.Title
 import sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient.NativeProtocolClientScreenContainer
+import sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient.java.NativeProtocolClientJavaScreen
 
 sealed class SamplesRoute(
     val root: String,
@@ -32,6 +33,7 @@ sealed class SamplesRoute(
     object Root : SamplesRoute("samples")
     internal object Sample : SamplesRoute("sample")
     internal object NativeProtocolClient : SamplesRoute("native-protocol-client")
+    internal object NativeProtocolClientJava : SamplesRoute("native-protocol-client-java")
 }
 
 fun NavGraphBuilder.samplesGraph() {
@@ -52,9 +54,15 @@ fun NavGraphBuilder.samplesGraph() {
                     text = stringResource(id = R.string.app_name),
                     style = MaterialTheme.typography.headlineLarge,
                 )
-                Title("Native protocol client")
+                Title("Native protocol client sample")
                 Button(onClick = {
                     navController.navigate(SamplesRoute.NativeProtocolClient.root)
+                }) {
+                    Text("Start")
+                }
+                Title("Native protocol client - Java sample")
+                Button(onClick = {
+                    navController.navigate(SamplesRoute.NativeProtocolClientJava.root)
                 }) {
                     Text("Start")
                 }
@@ -62,6 +70,9 @@ fun NavGraphBuilder.samplesGraph() {
         }
         composable(route = SamplesRoute.NativeProtocolClient) {
             NativeProtocolClientScreenContainer()
+        }
+        composable(route = SamplesRoute.NativeProtocolClientJava) {
+            NativeProtocolClientJavaScreen()
         }
     }
 }
