@@ -21,6 +21,24 @@ object NativeProtocolJavaSampleHelper {
         }
     }
 
+    @JvmStatic
+    fun sendFtPrintLocalImageCommand(
+        path: String,
+        listener: GeneralResourceListener,
+    ) {
+        CoroutineScope(Dispatchers.Main).launch {
+            nativeProtocolClient
+                .sendFtPrintLocalImage(path = path)
+                .collect {
+                    listener.onEvent(it)
+                }
+        }
+    }
+
+    interface GeneralResourceListener {
+        fun onEvent(resource: Resource<NativeProtocolResponse.General, FailureType.NativeProtocol>)
+    }
+
     interface FtScanResourceListener {
         fun onEvent(resource: Resource<NativeProtocolResponse.FtScanRead, FailureType.NativeProtocol>)
     }

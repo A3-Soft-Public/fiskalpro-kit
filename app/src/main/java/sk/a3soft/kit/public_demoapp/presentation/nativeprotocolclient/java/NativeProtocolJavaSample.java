@@ -2,6 +2,8 @@ package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient.java;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolResponse;
 import sk.a3soft.kit.tool.common.model.FailureType;
 import sk.a3soft.kit.tool.common.model.Resource;
@@ -40,6 +42,21 @@ public class NativeProtocolJavaSample {
                                 Log.i("JavaSample", "FtScan: ENDED_BY_USER.");
                                 break;
                         }
+                    }
+                }
+        );
+    }
+
+    void sendFtPrintLocalImage(@NonNull final String path) {
+        NativeProtocolJavaSampleHelper.sendFtPrintLocalImageCommand(
+                path,
+                resource -> {
+                    if (resource instanceof Resource.Loading) {
+                        Log.i("JavaSample", "FtPrintLocalImage: In progress.");
+                    } else if (resource instanceof Resource.Failure) {
+                        Log.i("JavaSample", "FtPrintLocalImage: Failure, type: " + ((Resource.Failure<FailureType.NativeProtocol>) resource).getType());
+                    } else if (resource instanceof Resource.Success) {
+                        Log.i("JavaSample", "FtPrintLocalImage: Success");
                     }
                 }
         );

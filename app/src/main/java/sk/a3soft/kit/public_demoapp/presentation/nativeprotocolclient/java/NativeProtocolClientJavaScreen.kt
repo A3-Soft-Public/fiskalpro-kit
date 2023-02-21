@@ -42,6 +42,18 @@ fun NativeProtocolClientJavaScreen() {
             ) {
                 Text("Send")
             }
+
+            Title(text = "FtPrintLocalImage")
+            Button(
+                onClick = {
+                    NativeProtocolJavaSample()
+                        .sendFtPrintLocalImage(
+                            "/storage/emulated/0/Download/test.png", // Note: The raw file path must be publicly accessible.
+                        )
+                }
+            ) {
+                Text("Send")
+            }
         }
     }
 }
