@@ -6,6 +6,7 @@ import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolRes
 import sk.a3soft.kit.tool.common.model.FailureType
 import sk.a3soft.kit.tool.common.model.Resource
 
+@Deprecated("Use Kotlin flow instead.")
 object NativeProtocolJavaSampleHelper {
 
     private val nativeProtocolClient = NativeProtocolClientImpl(Dispatchers.IO)

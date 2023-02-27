@@ -2,12 +2,12 @@ package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient.java;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolResponse;
+import sk.a3soft.kit.public_demoapp.utils.FileUtils;
 import sk.a3soft.kit.tool.common.model.FailureType;
 import sk.a3soft.kit.tool.common.model.Resource;
 
+@Deprecated
 public class NativeProtocolJavaSample {
 
     void startFtScan() {
@@ -47,18 +47,25 @@ public class NativeProtocolJavaSample {
         );
     }
 
-    void sendFtPrintLocalImage(@NonNull final String path) {
-        NativeProtocolJavaSampleHelper.sendFtPrintLocalImageCommand(
-                path,
-                resource -> {
-                    if (resource instanceof Resource.Loading) {
-                        Log.i("JavaSample", "FtPrintLocalImage: In progress.");
-                    } else if (resource instanceof Resource.Failure) {
-                        Log.i("JavaSample", "FtPrintLocalImage: Failure, type: " + ((Resource.Failure<FailureType.NativeProtocol>) resource).getType());
-                    } else if (resource instanceof Resource.Success) {
-                        Log.i("JavaSample", "FtPrintLocalImage: Success");
-                    }
-                }
-        );
+    void sendFtPrintLocalImage() {
+        new Thread(() -> {
+            final String sampleImagePath = FileUtils.saveSampleImage();
+            if (sampleImagePath != null) {
+                NativeProtocolJavaSampleHelper.sendFtPrintLocalImageCommand(
+                        sampleImagePath,
+                        resource -> {
+                            if (resource instanceof Resource.Loading) {
+                                Log.i("JavaSample", "FtPrintLocalImage: In progress.");
+                            } else if (resource instanceof Resource.Failure) {
+                                FileUtils.deleteSampleImage();
+                                Log.i("JavaSample", "FtPrintLocalImage: Failure, type: " + ((Resource.Failure<FailureType.NativeProtocol>) resource).getType());
+                            } else if (resource instanceof Resource.Success) {
+                                FileUtils.deleteSampleImage();
+                                Log.i("JavaSample", "FtPrintLocalImage: Success");
+                            }
+                        }
+                );
+            }
+        }).start();
     }
 }

@@ -1,13 +1,9 @@
 package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolCommandsBuilder
 import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolResponse
@@ -18,6 +14,7 @@ import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolCom
 import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolConfig
 import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolMode
 import sk.a3soft.kit.public_demoapp.extension.stateInWhileSubscribed
+import sk.a3soft.kit.public_demoapp.utils.FileUtils
 import sk.a3soft.kit.tool.common.model.FailureType
 import sk.a3soft.kit.tool.common.model.Resource
 import java.util.UUID
@@ -122,23 +119,22 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onTcpIpFtPrintLocalImageClick(selectedUri: Uri) {
-        val lastPathSegment = selectedUri.lastPathSegment
-        if (lastPathSegment == null || !lastPathSegment.contains("raw:")) {
-            requestState.value = NativeProtocolClientRequestState.Finished("Please select image with raw file path.")
-            return
-        }
+    fun onTcpIpFtPrintLocalImageClick() {
+        viewModelScope.launch {
+            FileUtils
+                .saveSampleImage()
+                ?.let { filePath ->
+                    nativeProtocolClient
+                        .sendFtPrintLocalImage(filePath)
+                        .collect {
+                            it.toRequestState()
 
-        lastPathSegment
-            .replace("raw:", "")
-            .run {
-                nativeProtocolClient
-                    .sendFtPrintLocalImage(this)
-                    .onEach {
-                        it.toRequestState()
-                    }
-                    .launchIn(viewModelScope)
-            }
+                            if (it is Resource.Failure || it is Resource.Success) {
+                                FileUtils.deleteSampleImage()
+                            }
+                        }
+                }
+        }
     }
 
     private inline fun <reified T : NativeProtocolResponse> Resource<T, FailureType.NativeProtocol>.toRequestState() {

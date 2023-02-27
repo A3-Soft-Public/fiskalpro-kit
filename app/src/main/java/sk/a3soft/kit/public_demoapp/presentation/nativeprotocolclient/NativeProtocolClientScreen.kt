@@ -2,10 +2,6 @@
 
 package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +20,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import sk.a3soft.kit.public_demoapp.presentation.components.FtPrintLocalImage
 import sk.a3soft.kit.public_demoapp.presentation.components.InfoDialog
 import sk.a3soft.kit.public_demoapp.presentation.components.LoadingOverlay
 import sk.a3soft.kit.public_demoapp.presentation.components.Title
@@ -37,14 +34,10 @@ fun NativeProtocolClientScreen(
     onTcpIpSimpleDocumentClick: () -> Unit,
     onTcpIpFtScanClick: () -> Unit,
     onTcpIpFtScanContinuousClick: () -> Unit,
-    onTcpIpFtPrintLocalImageClick: (selectedUri: Uri) -> Unit,
+    onTcpIpFtPrintLocalImageClick: () -> Unit,
     onCloseInfoDialog: () -> Unit,
     focusManager: FocusManager = LocalFocusManager.current,
 ) {
-
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) { uri ->
-        uri?.let { onTcpIpFtPrintLocalImageClick(it) }
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -99,11 +92,9 @@ fun NativeProtocolClientScreen(
                 Text("Send")
             }
             Title(text = "FtPrintLocalImage")
-            Button(
-                onClick = { launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
-            ) {
-                Text("Send")
-            }
+            FtPrintLocalImage(
+                onClick = onTcpIpFtPrintLocalImageClick
+            )
         }
         if (state.isLoading) {
             LoadingOverlay()

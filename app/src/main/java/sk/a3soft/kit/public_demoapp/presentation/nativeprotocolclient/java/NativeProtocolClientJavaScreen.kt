@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import sk.a3soft.kit.public_demoapp.presentation.components.FtPrintLocalImage
 import sk.a3soft.kit.public_demoapp.presentation.components.Title
 
 @Composable
@@ -44,15 +45,9 @@ fun NativeProtocolClientJavaScreen() {
             }
 
             Title(text = "FtPrintLocalImage")
-            Button(
-                onClick = {
-                    NativeProtocolJavaSample()
-                        .sendFtPrintLocalImage(
-                            "/storage/emulated/0/Download/test.png", // Note: The raw file path must be publicly accessible.
-                        )
-                }
-            ) {
-                Text("Send")
+            FtPrintLocalImage {
+                NativeProtocolJavaSample()
+                    .sendFtPrintLocalImage()
             }
         }
     }
