@@ -57,18 +57,18 @@ android {
 dependencies {
 
     // FiskalPRO
-    implementation "sk.a3soft.kit.provider.native-protocol:client:2.2.0"
+    implementation "sk.a3soft.kit.provider.native-protocol:client:2.3.1"
 
     // Desugar
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.2"
 
     // Hilt
-    implementation "com.google.dagger:hilt-android:2.44"
+    implementation "com.google.dagger:hilt-android:2.45"
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
-    kapt "com.google.dagger:hilt-compiler:2.44"
+    kapt "com.google.dagger:hilt-compiler:2.45"
 
     // Compose and others
-    def composeBom = platform("androidx.compose:compose-bom:2022.12.00")
+    def composeBom = platform("androidx.compose:compose-bom:2023.01.00")
     implementation composeBom
     androidTestImplementation composeBom
 
@@ -77,11 +77,11 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling"
 
     implementation "androidx.activity:activity-compose:1.6.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0"
     implementation "androidx.navigation:navigation-compose:2.5.3"
 
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-rc01"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0"
 
     implementation "com.google.accompanist:accompanist-permissions:0.28.0"
 

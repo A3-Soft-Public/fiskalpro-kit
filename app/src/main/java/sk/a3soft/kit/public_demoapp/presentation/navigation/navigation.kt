@@ -58,13 +58,13 @@ fun NavGraphBuilder.samplesGraph() {
                 Button(onClick = {
                     navController.navigate(SamplesRoute.NativeProtocolClient.root)
                 }) {
-                    Text("Start")
+                    Text("Open")
                 }
                 Title("Native protocol client - Java sample")
                 Button(onClick = {
                     navController.navigate(SamplesRoute.NativeProtocolClientJava.root)
                 }) {
-                    Text("Start")
+                    Text("Open")
                 }
             }
         }
