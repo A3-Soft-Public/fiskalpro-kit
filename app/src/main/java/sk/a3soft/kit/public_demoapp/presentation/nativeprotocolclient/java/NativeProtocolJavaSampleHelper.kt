@@ -1,15 +1,34 @@
 package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient.java
 
+import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.*
-import sk.a3soft.kit.provider.nativeprotocol.client.data.NativeProtocolClientImpl
 import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolResponse
+import sk.a3soft.kit.provider.nativeprotocol.client.domain.sendCommands
+import sk.a3soft.kit.public_demoapp.DemoApplication
+import sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient.java.di.NativeProtocolClientJavaEntryPoint
 import sk.a3soft.kit.tool.common.model.FailureType
 import sk.a3soft.kit.tool.common.model.Resource
 
 @Deprecated("Use Kotlin flow instead.")
 object NativeProtocolJavaSampleHelper {
 
-    private val nativeProtocolClient = NativeProtocolClientImpl(Dispatchers.IO)
+    private val nativeProtocolClient = EntryPointAccessors
+        .fromApplication(DemoApplication.applicationContext, NativeProtocolClientJavaEntryPoint::class.java)
+        .nativeProtocolClient()
+
+    @JvmStatic
+    fun sendCommands(
+        commands: Array<String>,
+        listener: GeneralResourceListener,
+    ) {
+        CoroutineScope(Dispatchers.Main).launch {
+            nativeProtocolClient
+                .sendCommands<NativeProtocolResponse.General>(commands)
+                .collect {
+                    listener.onEvent(it)
+                }
+        }
+    }
 
     @JvmStatic
     fun sendFtScanCommand(listener: FtScanResourceListener) {

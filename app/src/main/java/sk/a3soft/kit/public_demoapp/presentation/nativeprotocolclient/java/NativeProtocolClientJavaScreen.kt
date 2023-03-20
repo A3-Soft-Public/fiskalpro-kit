@@ -33,7 +33,11 @@ fun NativeProtocolClientJavaScreen() {
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center
             )
-
+            Title(text = "Simple non-fiscal document")
+            FtPrintLocalImage {
+                NativeProtocolJavaSample()
+                    .sendSimpleNonFiscalDocument()
+            }
             Title(text = "FtScan")
             Button(
                 onClick = {
@@ -43,7 +47,6 @@ fun NativeProtocolClientJavaScreen() {
             ) {
                 Text("Send")
             }
-
             Title(text = "FtPrintLocalImage")
             FtPrintLocalImage {
                 NativeProtocolJavaSample()

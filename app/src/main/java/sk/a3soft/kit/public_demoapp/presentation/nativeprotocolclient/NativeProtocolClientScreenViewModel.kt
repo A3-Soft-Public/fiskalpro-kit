@@ -1,5 +1,6 @@
 package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient
 
+import androidx.compose.runtime.traceEventEnd
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -65,32 +66,73 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onTcpIpSimpleDocumentClick() {
+    fun onTcpIpSimpleFiscalDocumentClick() {
         val nativeProtocolCommandsReceiptBuilder = NativeProtocolCommandsBuilder
-            .Receipt(
-                UUID.randomUUID().toString(),
+            .Document(
+                uuid = UUID.randomUUID().toString(),
+                type = NativeProtocolCommand.FtOpen.Type.FISCAL_SALE,
                 items = listOf(
-                    NativeProtocolCommandsBuilder.Receipt.Item(
+                    NativeProtocolCommandsBuilder.Document.Item(
                         totalAmount = "0.30",
                         quantity = "1",
                         text = "Apple",
+                        unit = "ks",
                         vatIndex = 1,
                     ),
-                    NativeProtocolCommandsBuilder.Receipt.Item(
+                    NativeProtocolCommandsBuilder.Document.Item(
                         totalAmount = "1.10",
                         quantity = "2",
                         text = "Pear",
+                        unit = "ks",
                         vatIndex = 1,
                     )
                 ),
                 payments = listOf(
-                    NativeProtocolCommandsBuilder.Receipt.Payment(
+                    NativeProtocolCommandsBuilder.Document.Payment(
                         index = NativeProtocolCommand.FPay.Index.CASH,
-                        text = "Hotovost",
+                        text = "Cash",
                         amount = "10",
+                    ),
+                    NativeProtocolCommandsBuilder.Document.Payment(
+                        index = NativeProtocolCommand.FPay.Index.CASH,
+                        text = "Money back",
+                        amount = "8.60",
+                        moneyBack = true,
                     )
                 ),
                 totalAmount = "1.40"
+            )
+
+        nativeProtocolClient
+            .sendCommands<NativeProtocolResponse.General>(nativeProtocolCommandsReceiptBuilder.build())
+            .onEach {
+                it.toRequestState()
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun onTcpIpSimpleNonFiscalDocumentClick() {
+        val nativeProtocolCommandsReceiptBuilder = NativeProtocolCommandsBuilder
+            .Document(
+                uuid = UUID.randomUUID().toString(),
+                type = NativeProtocolCommand.FtOpen.Type.NON_FISCAL_DOCUMENT,
+                items = listOf(
+                    NativeProtocolCommandsBuilder.Document.Item(
+                        totalAmount = "0.30",
+                        quantity = "1",
+                        text = "Apple",
+                        unit = "ks",
+                        vatIndex = 1,
+                    ),
+                ),
+                payments = listOf(
+                    NativeProtocolCommandsBuilder.Document.Payment(
+                        index = NativeProtocolCommand.FPay.Index.CASH,
+                        text = "Cash",
+                        amount = "5",
+                    ),
+                ),
+                totalAmount = "0.30"
             )
 
         nativeProtocolClient

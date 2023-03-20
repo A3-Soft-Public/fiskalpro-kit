@@ -60,7 +60,7 @@ fun NavGraphBuilder.samplesGraph() {
                 }) {
                     Text("Open")
                 }
-                Title("Native protocol client - Java sample")
+                Title("Native protocol client - Java sample (Deprecated)")
                 Button(onClick = {
                     navController.navigate(SamplesRoute.NativeProtocolClientJava.root)
                 }) {

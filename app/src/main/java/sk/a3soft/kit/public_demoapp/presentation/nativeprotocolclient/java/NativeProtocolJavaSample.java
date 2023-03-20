@@ -2,7 +2,12 @@ package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient.java;
 
 import android.util.Log;
 
+import java.util.Arrays;
+import java.util.UUID;
+
+import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolCommandsBuilder;
 import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolResponse;
+import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolCommand;
 import sk.a3soft.kit.public_demoapp.utils.FileUtils;
 import sk.a3soft.kit.tool.common.model.FailureType;
 import sk.a3soft.kit.tool.common.model.Resource;
@@ -67,5 +72,45 @@ public class NativeProtocolJavaSample {
                 );
             }
         }).start();
+    }
+
+    public void sendSimpleNonFiscalDocument() {
+
+        final NativeProtocolCommandsBuilder.Document builder = new NativeProtocolCommandsBuilder.Document(
+                UUID.randomUUID().toString(),
+                NativeProtocolCommand.FtOpen.Type.NON_FISCAL_DOCUMENT,
+                Arrays.asList(
+                        new NativeProtocolCommandsBuilder.Document.Item(
+                                "0.30",
+                                "1",
+                                (short) 1,
+                                "ks",
+                                "Apple"
+                        )
+                ),
+                Arrays.asList(
+                        new NativeProtocolCommandsBuilder.Document.Payment(
+                                NativeProtocolCommand.FPay.Index.CASH,
+                                "5",
+                                "Cash",
+                                false,
+                                null
+                        )
+                ),
+                "0.30"
+        );
+
+        NativeProtocolJavaSampleHelper.sendCommands(
+                builder.build(),
+                resource -> {
+                    if (resource instanceof Resource.Loading) {
+                        Log.i("JavaSample", "Non-fiscal document: In progress.");
+                    } else if (resource instanceof Resource.Failure) {
+                        Log.i("JavaSample", "Non-fiscal document: Failure, type: " + ((Resource.Failure<FailureType.NativeProtocol>) resource).getType());
+                    } else if (resource instanceof Resource.Success) {
+                        Log.i("JavaSample", "Non-fiscal document: Success");
+                    }
+                }
+        );
     }
 }

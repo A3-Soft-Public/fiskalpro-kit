@@ -31,7 +31,8 @@ fun NativeProtocolClientScreen(
     state: NativeProtocolClientScreenUiState,
     onHostIpValueChange: (String) -> Unit,
     onTcpIpFrInfoClick: () -> Unit,
-    onTcpIpSimpleDocumentClick: () -> Unit,
+    onTcpIpSimpleFiscalDocumentClick: () -> Unit,
+    onTcpIpSimpleNonFiscalDocumentClick: () -> Unit,
     onTcpIpFtScanClick: () -> Unit,
     onTcpIpFtScanContinuousClick: () -> Unit,
     onTcpIpFtPrintLocalImageClick: () -> Unit,
@@ -73,9 +74,15 @@ fun NativeProtocolClientScreen(
             ) {
                 Text("Send")
             }
-            Title(text = "Simple document")
+            Title(text = "Simple fiscal document")
             Button(
-                onClick = onTcpIpSimpleDocumentClick
+                onClick = onTcpIpSimpleFiscalDocumentClick
+            ) {
+                Text("Send")
+            }
+            Title(text = "Simple non-fiscal document")
+            Button(
+                onClick = onTcpIpSimpleNonFiscalDocumentClick
             ) {
                 Text("Send")
             }

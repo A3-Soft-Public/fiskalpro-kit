@@ -39,7 +39,7 @@ android {
 dependencies {
     …
 
-    implementation "sk.a3soft.kit.provider.native-protocol:client:2.3.1"
+    implementation "sk.a3soft.kit.provider.native-protocol:client:2.3.2"
 }
 ```
 
