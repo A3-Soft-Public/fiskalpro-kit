@@ -34,16 +34,14 @@ fun NativeProtocolClientJavaScreen() {
                 textAlign = TextAlign.Center
             )
             Title(text = "Simple non-fiscal document")
-            FtPrintLocalImage {
-                NativeProtocolJavaSample()
-                    .sendSimpleNonFiscalDocument()
+            Button(
+                onClick = { NativeProtocolJavaSample().sendSimpleNonFiscalDocument() }
+            ) {
+                Text("Send")
             }
             Title(text = "FtScan")
             Button(
-                onClick = {
-                    NativeProtocolJavaSample()
-                        .startFtScan()
-                }
+                onClick = { NativeProtocolJavaSample().startFtScan() }
             ) {
                 Text("Send")
             }
@@ -51,6 +49,18 @@ fun NativeProtocolClientJavaScreen() {
             FtPrintLocalImage {
                 NativeProtocolJavaSample()
                     .sendFtPrintLocalImage()
+            }
+            Title(text = "Card Payment - Purchase")
+            Button(
+                onClick = { NativeProtocolJavaSample().sendCardPaymentPurchaseCommand() }
+            ) {
+                Text("Send")
+            }
+            Title(text = "Card Payment - Cancel last")
+            Button(
+                onClick = { NativeProtocolJavaSample().sendCardPaymentCancelLastCommand() }
+            ) {
+                Text("Send")
             }
         }
     }

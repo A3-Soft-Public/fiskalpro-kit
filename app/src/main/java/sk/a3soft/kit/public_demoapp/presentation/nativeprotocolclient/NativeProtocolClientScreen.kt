@@ -30,13 +30,8 @@ import sk.a3soft.kit.public_demoapp.presentation.components.Title
 fun NativeProtocolClientScreen(
     state: NativeProtocolClientScreenUiState,
     onHostIpValueChange: (String) -> Unit,
-    onTcpIpFrInfoClick: () -> Unit,
-    onTcpIpSimpleFiscalDocumentClick: () -> Unit,
-    onTcpIpSimpleNonFiscalDocumentClick: () -> Unit,
-    onTcpIpFtScanClick: () -> Unit,
-    onTcpIpFtScanContinuousClick: () -> Unit,
-    onTcpIpFtPrintLocalImageClick: () -> Unit,
     onCloseInfoDialog: () -> Unit,
+    onClick: (action: NativeProtocolScreenAction) -> Unit,
     focusManager: FocusManager = LocalFocusManager.current,
 ) {
 
@@ -70,38 +65,50 @@ fun NativeProtocolClientScreen(
             )
             Title(text = "FrInfo")
             Button(
-                onClick = onTcpIpFrInfoClick
+                onClick = { onClick(NativeProtocolScreenAction.FrInfo) }
             ) {
                 Text("Send")
             }
             Title(text = "Simple fiscal document")
             Button(
-                onClick = onTcpIpSimpleFiscalDocumentClick
+                onClick = { onClick(NativeProtocolScreenAction.SimpleFiscalDocument) }
             ) {
                 Text("Send")
             }
             Title(text = "Simple non-fiscal document")
             Button(
-                onClick = onTcpIpSimpleNonFiscalDocumentClick
+                onClick = { onClick(NativeProtocolScreenAction.SimpleNonFiscalDocument) }
             ) {
                 Text("Send")
             }
             Title(text = "FtScan")
             Button(
-                onClick = onTcpIpFtScanClick
+                onClick = { onClick(NativeProtocolScreenAction.FtScan) }
             ) {
                 Text("Send")
             }
             Title(text = "FtScanContinuous")
             Button(
-                onClick = onTcpIpFtScanContinuousClick
+                onClick = { onClick(NativeProtocolScreenAction.FtScanContinuous) }
             ) {
                 Text("Send")
             }
             Title(text = "FtPrintLocalImage")
             FtPrintLocalImage(
-                onClick = onTcpIpFtPrintLocalImageClick
+                onClick = { onClick(NativeProtocolScreenAction.FtPrintLocalImage) }
             )
+            Title(text = "Card Payment - Purchase")
+            Button(
+                onClick = { onClick(NativeProtocolScreenAction.CardPaymentPurchase) }
+            ) {
+                Text("Send")
+            }
+            Title(text = "Card Payment - Cancel last")
+            Button(
+                onClick = { onClick(NativeProtocolScreenAction.CardPaymentCancelLast) }
+            ) {
+                Text("Send")
+            }
         }
         if (state.isLoading) {
             LoadingOverlay()

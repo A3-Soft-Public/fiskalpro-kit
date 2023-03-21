@@ -113,4 +113,40 @@ public class NativeProtocolJavaSample {
                 }
         );
     }
+
+    public void sendCardPaymentPurchaseCommand() {
+        NativeProtocolJavaSampleHelper.sendCardPaymentPurchaseCommand(
+                UUID.randomUUID().toString(),
+                15.50,
+                resource -> {
+                    if (resource instanceof Resource.Loading) {
+                        Log.i("JavaSample", "CardPaymentPurchase: In progress.");
+                    } else if (resource instanceof Resource.Failure) {
+                        Log.i("JavaSample", "CardPaymentPurchase: Failure, type: " + ((Resource.Failure<FailureType.NativeProtocol>) resource).getType());
+                    } else if (resource instanceof Resource.Success) {
+                        final Resource.Success<NativeProtocolResponse.FtCardInfo.Purchase> successResource = ((Resource.Success<NativeProtocolResponse.FtCardInfo.Purchase>) resource);
+                        final NativeProtocolResponse.FtCardInfo.Purchase data = successResource.getData();
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, result: " + data.toString());
+                    }
+                }
+        );
+    }
+
+    public void sendCardPaymentCancelLastCommand() {
+        NativeProtocolJavaSampleHelper.sendCardPaymentCancelLastCommand(
+                UUID.randomUUID().toString(),
+                -15.50,
+                resource -> {
+                    if (resource instanceof Resource.Loading) {
+                        Log.i("JavaSample", "CardPaymentCancelLast: In progress.");
+                    } else if (resource instanceof Resource.Failure) {
+                        Log.i("JavaSample", "CardPaymentCancelLast: Failure, type: " + ((Resource.Failure<FailureType.NativeProtocol>) resource).getType());
+                    } else if (resource instanceof Resource.Success) {
+                        final Resource.Success<NativeProtocolResponse.FtCardInfo.Reversal> successResource = ((Resource.Success<NativeProtocolResponse.FtCardInfo.Reversal>) resource);
+                        final NativeProtocolResponse.FtCardInfo.Reversal data = successResource.getData();
+                        Log.i("JavaSample", "CardPaymentCancelLast: Success, result: " + data.toString());
+                    }
+                }
+        );
+    }
 }

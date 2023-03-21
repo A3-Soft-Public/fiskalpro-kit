@@ -1,6 +1,5 @@
 package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient
 
-import androidx.compose.runtime.traceEventEnd
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,7 +56,20 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
         tcpIpHost.value = newValue
     }
 
-    fun onTcpIpFrInfoClick() {
+    fun onClick(action: NativeProtocolScreenAction) {
+        when (action) {
+            NativeProtocolScreenAction.FrInfo -> onFrInfoClick()
+            NativeProtocolScreenAction.SimpleFiscalDocument -> onSimpleFiscalDocumentClick()
+            NativeProtocolScreenAction.SimpleNonFiscalDocument -> onSimpleNonFiscalDocumentClick()
+            NativeProtocolScreenAction.FtScan -> onFtScanClick()
+            NativeProtocolScreenAction.FtScanContinuous -> onFtScanContinuousClick()
+            is NativeProtocolScreenAction.FtPrintLocalImage -> onFtPrintLocalImageClick()
+            NativeProtocolScreenAction.CardPaymentPurchase -> onCardPaymentPurchaseClick()
+            NativeProtocolScreenAction.CardPaymentCancelLast -> onCardPaymentCancelLastClick()
+        }
+    }
+
+    private fun onFrInfoClick() {
         nativeProtocolClient
             .sendFrInfoCommand()
             .onEach {
@@ -66,7 +78,7 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onTcpIpSimpleFiscalDocumentClick() {
+    private fun onSimpleFiscalDocumentClick() {
         val nativeProtocolCommandsReceiptBuilder = NativeProtocolCommandsBuilder
             .Document(
                 uuid = UUID.randomUUID().toString(),
@@ -111,7 +123,7 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onTcpIpSimpleNonFiscalDocumentClick() {
+    private fun onSimpleNonFiscalDocumentClick() {
         val nativeProtocolCommandsReceiptBuilder = NativeProtocolCommandsBuilder
             .Document(
                 uuid = UUID.randomUUID().toString(),
@@ -143,7 +155,7 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onTcpIpFtScanClick() {
+    private fun onFtScanClick() {
         nativeProtocolClient
             .sendFtScanCommand()
             .onEach {
@@ -152,7 +164,7 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onTcpIpFtScanContinuousClick() {
+    private fun onFtScanContinuousClick() {
         nativeProtocolClient
             .sendFtScanContinuousCommands()
             .onEach {
@@ -161,7 +173,7 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onTcpIpFtPrintLocalImageClick() {
+    private fun onFtPrintLocalImageClick() {
         viewModelScope.launch {
             FileUtils
                 .saveSampleImage()
@@ -179,12 +191,37 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
         }
     }
 
+    private fun onCardPaymentPurchaseClick() {
+        nativeProtocolClient
+            .sendCardPaymentPurchaseCommand(
+                uuid = UUID.randomUUID().toString(),
+                amount = 15.50,
+            )
+            .onEach {
+                it.toRequestState()
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun onCardPaymentCancelLastClick() {
+        nativeProtocolClient
+            .sendCardPaymentCancelLastCommand(
+                uuid = UUID.randomUUID().toString(),
+                amount = -15.50,
+            )
+            .onEach {
+                it.toRequestState()
+            }
+            .launchIn(viewModelScope)
+    }
+
     private inline fun <reified T : NativeProtocolResponse> Resource<T, FailureType.NativeProtocol>.toRequestState() {
         requestState.value = when (this) {
             Resource.Loading -> NativeProtocolClientRequestState.InProgress
             is Resource.Failure -> NativeProtocolClientRequestState.Finished(toString())
             is Resource.Success -> when (this.data) {
                 is NativeProtocolResponse.FrInfo,
+                is NativeProtocolResponse.FtCardInfo,
                 is NativeProtocolResponse.FtScanRead,
                 is NativeProtocolResponse.FtScanResult -> NativeProtocolClientRequestState.Finished(data.toString())
                 else -> NativeProtocolClientRequestState.Finished("Success!")

@@ -14,12 +14,7 @@ fun NativeProtocolClientScreenContainer(
     NativeProtocolClientScreen(
         state = state,
         onHostIpValueChange = viewModel::onHostIpValueChange,
-        onTcpIpFrInfoClick = viewModel::onTcpIpFrInfoClick,
-        onTcpIpSimpleFiscalDocumentClick = viewModel::onTcpIpSimpleFiscalDocumentClick,
-        onTcpIpSimpleNonFiscalDocumentClick = viewModel::onTcpIpSimpleNonFiscalDocumentClick,
-        onTcpIpFtScanClick = viewModel::onTcpIpFtScanClick,
-        onTcpIpFtScanContinuousClick = viewModel::onTcpIpFtScanContinuousClick,
-        onTcpIpFtPrintLocalImageClick = viewModel::onTcpIpFtPrintLocalImageClick,
+        onClick = viewModel::onClick,
         onCloseInfoDialog = viewModel::onCloseInfoDialog,
     )
 }

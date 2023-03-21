@@ -55,11 +55,49 @@ object NativeProtocolJavaSampleHelper {
         }
     }
 
+    @JvmStatic
+    fun sendCardPaymentPurchaseCommand(
+        uuid: String,
+        amount: Double,
+        listener: CardPaymentPurchaseResourceListener,
+    ) {
+        CoroutineScope(Dispatchers.Main).launch {
+            nativeProtocolClient
+                .sendCardPaymentPurchaseCommand(uuid = uuid, amount = amount)
+                .collect {
+                    listener.onEvent(it)
+                }
+        }
+    }
+
+    @JvmStatic
+    fun sendCardPaymentCancelLastCommand(
+        uuid: String,
+        amount: Double,
+        listener: CardPaymentCancelLastResourceListener,
+    ) {
+        CoroutineScope(Dispatchers.Main).launch {
+            nativeProtocolClient
+                .sendCardPaymentCancelLastCommand(uuid = uuid, amount = amount)
+                .collect {
+                    listener.onEvent(it)
+                }
+        }
+    }
+
     interface GeneralResourceListener {
         fun onEvent(resource: Resource<NativeProtocolResponse.General, FailureType.NativeProtocol>)
     }
 
     interface FtScanResourceListener {
         fun onEvent(resource: Resource<NativeProtocolResponse.FtScanRead, FailureType.NativeProtocol>)
+    }
+
+    interface CardPaymentPurchaseResourceListener {
+        fun onEvent(resource: Resource<NativeProtocolResponse.FtCardInfo.Purchase, FailureType.NativeProtocol>)
+    }
+
+    interface CardPaymentCancelLastResourceListener {
+        fun onEvent(resource: Resource<NativeProtocolResponse.FtCardInfo.Reversal, FailureType.NativeProtocol>)
     }
 }
