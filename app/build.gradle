@@ -57,7 +57,7 @@ android {
 dependencies {
 
     // FiskalPRO
-    implementation "sk.a3soft.kit.provider.native-protocol:client:2.3.3"
+    implementation "sk.a3soft.kit.provider.native-protocol:client:2.3.5"
 
     // Desugar
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.2"
@@ -76,12 +76,12 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling-preview"
     debugImplementation "androidx.compose.ui:ui-tooling"
 
-    implementation "androidx.activity:activity-compose:1.6.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0"
+    implementation "androidx.activity:activity-compose:1.7.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
     implementation "androidx.navigation:navigation-compose:2.5.3"
 
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.1"
 
     implementation "com.google.accompanist:accompanist-permissions:0.28.0"
 

@@ -196,6 +196,7 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .sendCardPaymentPurchaseCommand(
                 uuid = UUID.randomUUID().toString(),
                 amount = 15.50,
+                variableSymbol = "1234567890",
             )
             .onEach {
                 it.toRequestState()

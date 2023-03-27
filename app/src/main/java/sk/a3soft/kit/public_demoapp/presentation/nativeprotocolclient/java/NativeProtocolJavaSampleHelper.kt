@@ -56,14 +56,16 @@ object NativeProtocolJavaSampleHelper {
     }
 
     @JvmStatic
+    @JvmOverloads
     fun sendCardPaymentPurchaseCommand(
         uuid: String,
         amount: Double,
+        variableSymbol: String? = null,
         listener: CardPaymentPurchaseResourceListener,
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             nativeProtocolClient
-                .sendCardPaymentPurchaseCommand(uuid = uuid, amount = amount)
+                .sendCardPaymentPurchaseCommand(uuid = uuid, amount = amount, variableSymbol = variableSymbol)
                 .collect {
                     listener.onEvent(it)
                 }

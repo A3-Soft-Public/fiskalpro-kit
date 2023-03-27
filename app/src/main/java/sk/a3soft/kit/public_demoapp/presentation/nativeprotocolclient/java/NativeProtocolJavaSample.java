@@ -118,6 +118,7 @@ public class NativeProtocolJavaSample {
         NativeProtocolJavaSampleHelper.sendCardPaymentPurchaseCommand(
                 UUID.randomUUID().toString(),
                 15.50,
+                "1234567890",
                 resource -> {
                     if (resource instanceof Resource.Loading) {
                         Log.i("JavaSample", "CardPaymentPurchase: In progress.");
