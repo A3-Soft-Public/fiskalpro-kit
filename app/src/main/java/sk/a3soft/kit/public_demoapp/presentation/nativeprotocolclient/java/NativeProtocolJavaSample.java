@@ -127,7 +127,20 @@ public class NativeProtocolJavaSample {
                     } else if (resource instanceof Resource.Success) {
                         final Resource.Success<NativeProtocolResponse.FtCardInfo.Purchase> successResource = ((Resource.Success<NativeProtocolResponse.FtCardInfo.Purchase>) resource);
                         final NativeProtocolResponse.FtCardInfo.Purchase data = successResource.getData();
-                        Log.i("JavaSample", "CardPaymentPurchase: Success, result: " + data.toString());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, AID: " + data.getAid());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, AUTH CODE: " + data.getAuthCode());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD TYPE: " + data.getCardType());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD MASK PAN: " + data.getCardMaskPan());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD DATE TIME: " + data.getDateTime());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD IS ACCEPTED: " + data.isAccepted());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD MESSAGE: " + data.getMessageOrReasonNotAccepted());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD MESSAGE 2: " + data.getMessage2());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD PIN: " + data.getPin());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD SEQ NUMBER: " + data.getSeqNumber());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD SIGNATURE CHECK: " + data.getSignatureCheck());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD TERMINAL ID: " + data.getTerminalId());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD UID: " + data.getUid());
+                        Log.i("JavaSample", "CardPaymentPurchase: Success, CARD VARIABLE SYMBOL: " + data.getVariableSymbol());
                     }
                 }
         );
