@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Title(text: String) {
     Text(
-        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
         text = text,
         style = MaterialTheme.typography.headlineSmall,
         textAlign = TextAlign.Center,

@@ -6,4 +6,5 @@ data class NativeProtocolClientScreenUiState(
     val tcpIpHost: String = LOCALHOST,
     val infoMessage: String? = null,
     val isLoading: Boolean = false,
+    val printerTypesUiState: PrinterTypesUiState? = null,
 )

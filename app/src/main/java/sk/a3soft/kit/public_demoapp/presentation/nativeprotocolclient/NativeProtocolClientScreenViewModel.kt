@@ -13,6 +13,7 @@ import sk.a3soft.kit.provider.nativeprotocol.common.LOCALHOST
 import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolCommand
 import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolConfig
 import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolMode
+import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolPrinterType
 import sk.a3soft.kit.public_demoapp.extension.stateInWhileSubscribed
 import sk.a3soft.kit.public_demoapp.utils.FileUtils
 import sk.a3soft.kit.tool.common.model.FailureType
@@ -27,16 +28,19 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val tcpIpHost = MutableStateFlow(LOCALHOST)
+    private val printerTypesUiState = MutableStateFlow<PrinterTypesUiState?>(null)
     private val requestState = MutableStateFlow<NativeProtocolClientRequestState>(NativeProtocolClientRequestState.NotStarted)
 
     val state = combine(
         tcpIpHost,
         requestState,
-    ) { tcpIpHost, requestState ->
+        printerTypesUiState,
+    ) { tcpIpHost, requestState, printerTypesUiState ->
         NativeProtocolClientScreenUiState(
             tcpIpHost = tcpIpHost,
             infoMessage = if (requestState is NativeProtocolClientRequestState.Finished) requestState.message else null,
-            isLoading = requestState is NativeProtocolClientRequestState.InProgress
+            isLoading = requestState is NativeProtocolClientRequestState.InProgress,
+            printerTypesUiState = printerTypesUiState,
         )
     }.stateInWhileSubscribed(viewModelScope, NativeProtocolClientScreenUiState())
 
@@ -61,11 +65,16 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             NativeProtocolScreenAction.FrInfo -> onFrInfoClick()
             NativeProtocolScreenAction.SimpleFiscalDocument -> onSimpleFiscalDocumentClick()
             NativeProtocolScreenAction.SimpleNonFiscalDocument -> onSimpleNonFiscalDocumentClick()
+            NativeProtocolScreenAction.SimpleNonFiscalDocumentPrinterSelect -> onSimpleNonFiscalDocumentPrinterSelectClick()
             NativeProtocolScreenAction.FtScan -> onFtScanClick()
             NativeProtocolScreenAction.FtScanContinuous -> onFtScanContinuousClick()
-            is NativeProtocolScreenAction.FtPrintLocalImage -> onFtPrintLocalImageClick()
+            NativeProtocolScreenAction.FtPrintLocalImage -> onFtPrintLocalImageClick()
+            NativeProtocolScreenAction.FtPrintLocalImagePrinterSelect -> onFtPrintLocalImagePrinterSelectClick()
             NativeProtocolScreenAction.CardPaymentPurchase -> onCardPaymentPurchaseClick()
+            NativeProtocolScreenAction.CardPaymentPurchasePrinterSelect -> onCardPaymentPurchasePrinterSelectClick()
             NativeProtocolScreenAction.CardPaymentCancelLast -> onCardPaymentCancelLastClick()
+            is NativeProtocolScreenAction.PrinterTypeSelected -> onPrinterTypeSelected(action.type, action.action)
+            NativeProtocolScreenAction.PrinterTypesCanceled -> printerTypesUiState.value = null
         }
     }
 
@@ -78,11 +87,14 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun onSimpleFiscalDocumentClick() {
+    private fun onSimpleFiscalDocumentClick(
+        printerType: NativeProtocolPrinterType? = null,
+    ) {
         val nativeProtocolCommandsReceiptBuilder = NativeProtocolCommandsBuilder
             .Document(
                 uuid = UUID.randomUUID().toString(),
                 type = NativeProtocolCommand.FtOpen.Type.FISCAL_SALE,
+                printerType = printerType,
                 items = listOf(
                     NativeProtocolCommandsBuilder.Document.Item(
                         totalAmount = "0.30",
@@ -123,11 +135,14 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun onSimpleNonFiscalDocumentClick() {
+    private fun onSimpleNonFiscalDocumentClick(
+        printerType: NativeProtocolPrinterType? = null,
+    ) {
         val nativeProtocolCommandsReceiptBuilder = NativeProtocolCommandsBuilder
             .Document(
                 uuid = UUID.randomUUID().toString(),
                 type = NativeProtocolCommand.FtOpen.Type.NON_FISCAL_DOCUMENT,
+                printerType = printerType,
                 items = listOf(
                     NativeProtocolCommandsBuilder.Document.Item(
                         totalAmount = "0.30",
@@ -173,13 +188,18 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun onFtPrintLocalImageClick() {
+    private fun onFtPrintLocalImageClick(
+        printerType: NativeProtocolPrinterType? = null,
+    ) {
         viewModelScope.launch {
             FileUtils
                 .saveSampleImage()
                 ?.let { filePath ->
                     nativeProtocolClient
-                        .sendFtPrintLocalImage(filePath)
+                        .sendFtPrintLocalImageCommand(
+                            path = filePath,
+                            printerType = printerType,
+                        )
                         .collect {
                             it.toRequestState()
 
@@ -191,12 +211,15 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
         }
     }
 
-    private fun onCardPaymentPurchaseClick() {
+    private fun onCardPaymentPurchaseClick(
+        printerType: NativeProtocolPrinterType? = null,
+    ) {
         nativeProtocolClient
             .sendCardPaymentPurchaseCommand(
                 uuid = UUID.randomUUID().toString(),
                 amount = 15.50,
                 variableSymbol = "1234567890",
+                printerType = printerType,
             )
             .onEach {
                 it.toRequestState()
@@ -204,16 +227,59 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun onCardPaymentCancelLastClick() {
+    private fun onCardPaymentCancelLastClick(
+        printerType: NativeProtocolPrinterType? = null,
+    ) {
         nativeProtocolClient
             .sendCardPaymentCancelLastCommand(
                 uuid = UUID.randomUUID().toString(),
                 amount = -15.50,
+                printerType = printerType,
             )
             .onEach {
                 it.toRequestState()
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun onFtPrintLocalImagePrinterSelectClick() {
+        obtainAvailablePrinters(action = PrinterTypesUiState.RequestedAction.FtPrintLocalImage)
+    }
+
+    private fun onCardPaymentPurchasePrinterSelectClick() {
+        obtainAvailablePrinters(action = PrinterTypesUiState.RequestedAction.CardPaymentPurchase)
+    }
+
+    private fun onSimpleNonFiscalDocumentPrinterSelectClick() {
+        obtainAvailablePrinters(action = PrinterTypesUiState.RequestedAction.SimpleNonFiscalDocument)
+    }
+
+    private fun obtainAvailablePrinters(action: PrinterTypesUiState.RequestedAction) {
+        nativeProtocolClient
+            .sendFrPrinterTypesCommand()
+            .onEach {
+                when (it) {
+                    Resource.Loading,
+                    is Resource.Failure -> it.toRequestState()
+                    is Resource.Success -> {
+                        requestState.value = NativeProtocolClientRequestState.NotStarted
+                        printerTypesUiState.value = it.data.types.toPrinterTypesUiState(action)
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun onPrinterTypeSelected(
+        type: PrinterTypesUiState.PrinterType,
+        action: PrinterTypesUiState.RequestedAction,
+    ) {
+        printerTypesUiState.value = null
+        when (action) {
+            PrinterTypesUiState.RequestedAction.FtPrintLocalImage -> onFtPrintLocalImageClick(type.payload)
+            PrinterTypesUiState.RequestedAction.CardPaymentPurchase -> onCardPaymentPurchaseClick(type.payload)
+            PrinterTypesUiState.RequestedAction.SimpleNonFiscalDocument -> onSimpleNonFiscalDocumentClick(type.payload)
+        }
     }
 
     private inline fun <reified T : NativeProtocolResponse> Resource<T, FailureType.NativeProtocol>.toRequestState() {
@@ -224,6 +290,7 @@ class NativeProtocolClientScreenViewModel @Inject constructor(
                 is NativeProtocolResponse.FrInfo,
                 is NativeProtocolResponse.FtCardInfo,
                 is NativeProtocolResponse.FtScanRead,
+                is NativeProtocolResponse.FrPrinterTypes,
                 is NativeProtocolResponse.FtScanResult -> NativeProtocolClientRequestState.Finished(data.toString())
                 else -> NativeProtocolClientRequestState.Finished("Success!")
             }

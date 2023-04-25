@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import sk.a3soft.kit.public_demoapp.presentation.components.FtPrintLocalImage
 import sk.a3soft.kit.public_demoapp.presentation.components.InfoDialog
 import sk.a3soft.kit.public_demoapp.presentation.components.LoadingOverlay
+import sk.a3soft.kit.public_demoapp.presentation.components.PrinterTypesDialog
 import sk.a3soft.kit.public_demoapp.presentation.components.Title
 
 // Note: This screen is just a demo example
@@ -81,6 +82,12 @@ fun NativeProtocolClientScreen(
             ) {
                 Text("Send")
             }
+            Title(text = "Simple non-fiscal document (printer select)")
+            Button(
+                onClick = { onClick(NativeProtocolScreenAction.SimpleNonFiscalDocumentPrinterSelect) }
+            ) {
+                Text("Send")
+            }
             Title(text = "FtScan")
             Button(
                 onClick = { onClick(NativeProtocolScreenAction.FtScan) }
@@ -97,9 +104,19 @@ fun NativeProtocolClientScreen(
             FtPrintLocalImage(
                 onClick = { onClick(NativeProtocolScreenAction.FtPrintLocalImage) }
             )
+            Title(text = "FtPrintLocalImage (printer select)")
+            FtPrintLocalImage(
+                onClick = { onClick(NativeProtocolScreenAction.FtPrintLocalImagePrinterSelect) }
+            )
             Title(text = "Card Payment - Purchase")
             Button(
                 onClick = { onClick(NativeProtocolScreenAction.CardPaymentPurchase) }
+            ) {
+                Text("Send")
+            }
+            Title(text = "Card Payment - Purchase (printer select)")
+            Button(
+                onClick = { onClick(NativeProtocolScreenAction.CardPaymentPurchasePrinterSelect) }
             ) {
                 Text("Send")
             }
@@ -117,6 +134,13 @@ fun NativeProtocolClientScreen(
             InfoDialog(
                 message = state.infoMessage,
                 onClose = onCloseInfoDialog,
+            )
+        }
+        if (state.printerTypesUiState != null) {
+            PrinterTypesDialog(
+                printerTypes = state.printerTypesUiState.types,
+                onCancel = { onClick(NativeProtocolScreenAction.PrinterTypesCanceled) },
+                onSelectPrinterType = { onClick(NativeProtocolScreenAction.PrinterTypeSelected(it, state.printerTypesUiState.action)) },
             )
         }
     }

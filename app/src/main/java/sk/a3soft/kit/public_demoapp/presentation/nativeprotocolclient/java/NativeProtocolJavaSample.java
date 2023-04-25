@@ -2,12 +2,17 @@ package sk.a3soft.kit.public_demoapp.presentation.nativeprotocolclient.java;
 
 import android.util.Log;
 
-import java.util.Arrays;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolCommandsBuilder;
 import sk.a3soft.kit.provider.nativeprotocol.client.data.model.NativeProtocolResponse;
 import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolCommand;
+import sk.a3soft.kit.provider.nativeprotocol.common.data.model.NativeProtocolPrinterType;
 import sk.a3soft.kit.public_demoapp.utils.FileUtils;
 import sk.a3soft.kit.tool.common.model.FailureType;
 import sk.a3soft.kit.tool.common.model.Resource;
@@ -15,7 +20,7 @@ import sk.a3soft.kit.tool.common.model.Resource;
 @Deprecated
 public class NativeProtocolJavaSample {
 
-    void startFtScan() {
+    void startFtScanCommand() {
         NativeProtocolJavaSampleHelper.sendFtScanCommand(resource -> {
                     if (resource instanceof Resource.Loading) {
                         Log.i("JavaSample", "FtScan: In progress.");
@@ -52,12 +57,17 @@ public class NativeProtocolJavaSample {
         );
     }
 
-    void sendFtPrintLocalImage() {
+    void sendFtPrintLocalImageCommand() {
+        sendFtPrintLocalImageCommand(null);
+    }
+
+    void sendFtPrintLocalImageCommand(@Nullable final NativeProtocolPrinterType printerType) {
         new Thread(() -> {
             final String sampleImagePath = FileUtils.saveSampleImage();
             if (sampleImagePath != null) {
                 NativeProtocolJavaSampleHelper.sendFtPrintLocalImageCommand(
                         sampleImagePath,
+                        printerType,
                         resource -> {
                             if (resource instanceof Resource.Loading) {
                                 Log.i("JavaSample", "FtPrintLocalImage: In progress.");
@@ -74,12 +84,17 @@ public class NativeProtocolJavaSample {
         }).start();
     }
 
-    public void sendSimpleNonFiscalDocument() {
+    void sendSimpleNonFiscalDocumentCommands() {
+        sendSimpleNonFiscalDocumentCommands(null);
+    }
+
+    void sendSimpleNonFiscalDocumentCommands(@Nullable final NativeProtocolPrinterType printerType) {
 
         final NativeProtocolCommandsBuilder.Document builder = new NativeProtocolCommandsBuilder.Document(
                 UUID.randomUUID().toString(),
                 NativeProtocolCommand.FtOpen.Type.NON_FISCAL_DOCUMENT,
-                Arrays.asList(
+                printerType,
+                List.of(
                         new NativeProtocolCommandsBuilder.Document.Item(
                                 "0.30",
                                 "1",
@@ -88,7 +103,7 @@ public class NativeProtocolJavaSample {
                                 "Apple"
                         )
                 ),
-                Arrays.asList(
+                List.of(
                         new NativeProtocolCommandsBuilder.Document.Payment(
                                 NativeProtocolCommand.FPay.Index.CASH,
                                 "5",
@@ -114,11 +129,16 @@ public class NativeProtocolJavaSample {
         );
     }
 
-    public void sendCardPaymentPurchaseCommand() {
+    void sendCardPaymentPurchaseCommand() {
+        sendCardPaymentPurchaseCommand(null);
+    }
+
+    void sendCardPaymentPurchaseCommand(@Nullable final NativeProtocolPrinterType printerType) {
         NativeProtocolJavaSampleHelper.sendCardPaymentPurchaseCommand(
                 UUID.randomUUID().toString(),
                 15.50,
                 "1234567890",
+                printerType,
                 resource -> {
                     if (resource instanceof Resource.Loading) {
                         Log.i("JavaSample", "CardPaymentPurchase: In progress.");
@@ -146,10 +166,15 @@ public class NativeProtocolJavaSample {
         );
     }
 
-    public void sendCardPaymentCancelLastCommand() {
+    void sendCardPaymentCancelLastCommand() {
+        sendCardPaymentCancelLastCommand(null);
+    }
+
+    void sendCardPaymentCancelLastCommand(@Nullable final NativeProtocolPrinterType printerType) {
         NativeProtocolJavaSampleHelper.sendCardPaymentCancelLastCommand(
                 UUID.randomUUID().toString(),
                 -15.50,
+                printerType,
                 resource -> {
                     if (resource instanceof Resource.Loading) {
                         Log.i("JavaSample", "CardPaymentCancelLast: In progress.");
@@ -162,5 +187,49 @@ public class NativeProtocolJavaSample {
                     }
                 }
         );
+    }
+
+    void sendSimpleNonFiscalDocumentPrinterSelectCommands() {
+        sendFrPrinterTypesCommand(types -> sendSimpleNonFiscalDocumentCommands(getFirstOrNull(types)));
+    }
+
+    void sendFtPrintLocalImagePrinterSelectCommand() {
+        sendFrPrinterTypesCommand(types -> sendFtPrintLocalImageCommand(getFirstOrNull(types)));
+    }
+
+    void sendCardPaymentPurchasePrinterSelectCommand() {
+        sendFrPrinterTypesCommand(types -> sendCardPaymentPurchaseCommand(getFirstOrNull(types)));
+    }
+
+    private void sendFrPrinterTypesCommand(@NonNull final PrinterTypesCallback callback) {
+        NativeProtocolJavaSampleHelper.sendFrPrinterTypesCommand(
+                resource -> {
+                    if (resource instanceof Resource.Loading) {
+                        Log.i("JavaSample", "FrPrinterTypes: In progress.");
+                    } else if (resource instanceof Resource.Failure) {
+                        Log.i("JavaSample", "FrPrinterTypes: Failure, type: " + ((Resource.Failure<FailureType.NativeProtocol>) resource).getType());
+                    } else if (resource instanceof Resource.Success) {
+                        final Resource.Success<NativeProtocolResponse.FrPrinterTypes> successResource = ((Resource.Success<NativeProtocolResponse.FrPrinterTypes>) resource);
+                        final NativeProtocolResponse.FrPrinterTypes data = successResource.getData();
+                        Log.i("JavaSample", "FrPrinterTypes: Success, result: " + data.toString());
+
+                        callback.onSuccess(new ArrayList<>(data.getTypes()));
+                    }
+                }
+        );
+    }
+
+    private interface PrinterTypesCallback {
+        void onSuccess(ArrayList<NativeProtocolPrinterType> types);
+    }
+
+    // Note: This is just a dummy example simulating the first pick from the obtained collection.
+    @Nullable
+    private static NativeProtocolPrinterType getFirstOrNull(@NonNull final ArrayList<NativeProtocolPrinterType> types) {
+        if (types.isEmpty()) {
+            return null;
+        } else {
+            return types.get(0);
+        }
     }
 }

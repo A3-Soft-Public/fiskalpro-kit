@@ -35,24 +35,39 @@ fun NativeProtocolClientJavaScreen() {
             )
             Title(text = "Simple non-fiscal document")
             Button(
-                onClick = { NativeProtocolJavaSample().sendSimpleNonFiscalDocument() }
+                onClick = { NativeProtocolJavaSample().sendSimpleNonFiscalDocumentCommands() }
+            ) {
+                Text("Send")
+            }
+            Title(text = "Simple non-fiscal document (printer select)")
+            Button(
+                onClick = { NativeProtocolJavaSample().sendSimpleNonFiscalDocumentPrinterSelectCommands() }
             ) {
                 Text("Send")
             }
             Title(text = "FtScan")
             Button(
-                onClick = { NativeProtocolJavaSample().startFtScan() }
+                onClick = { NativeProtocolJavaSample().startFtScanCommand() }
             ) {
                 Text("Send")
             }
             Title(text = "FtPrintLocalImage")
             FtPrintLocalImage {
-                NativeProtocolJavaSample()
-                    .sendFtPrintLocalImage()
+                NativeProtocolJavaSample().sendFtPrintLocalImageCommand()
+            }
+            Title(text = "FtPrintLocalImage (printer select)")
+            FtPrintLocalImage {
+                NativeProtocolJavaSample().sendFtPrintLocalImagePrinterSelectCommand()
             }
             Title(text = "Card Payment - Purchase")
             Button(
                 onClick = { NativeProtocolJavaSample().sendCardPaymentPurchaseCommand() }
+            ) {
+                Text("Send")
+            }
+            Title(text = "Card Payment - Purchase (printer select)")
+            Button(
+                onClick = { NativeProtocolJavaSample().sendCardPaymentPurchasePrinterSelectCommand() }
             ) {
                 Text("Send")
             }

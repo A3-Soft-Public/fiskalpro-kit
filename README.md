@@ -39,7 +39,7 @@ android {
 dependencies {
     …
 
-    implementation "sk.a3soft.kit.provider.native-protocol:client:2.3.5"
+    implementation "sk.a3soft.kit.provider.native-protocol:client:2.4.0"
 }
 ```
 
@@ -201,7 +201,7 @@ class ExampleViewModel @Inject constructor(
 
     fun onTcpIpFtPrintLocalImageClick() {
         nativeProtocolClient
-            .sendFtPrintLocalImage("/public/raw/path/to/the/target/image.extension")
+            .sendFtPrintLocalImageCommand("/public/raw/path/to/the/target/image.extension")
             .onEach {
                 when (it) {
                     Resource.Loading -> TODO()
